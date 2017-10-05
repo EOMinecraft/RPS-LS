@@ -28,6 +28,7 @@ void Game::winCheck()
 	if (userChoice == computerChoice)
 	{
 		tieCount++;
+		winMessage = "The game was a tie";
 	}
 
 	// if computer choice is in the userChoice objects win condition
@@ -102,7 +103,7 @@ void Game::displayMenu()
 			SetConsoleTextAttribute(hConsole, 7);
 
 		// display
-		std::cout << it->second->id + 1 << ". " << it->second->name << std::endl;
+		std::cout << it->second->id << ". " << it->second->name << std::endl;
 	}
 	SetConsoleTextAttribute(hConsole, 7);
 	std::cout << "\n\n\n";
