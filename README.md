@@ -1,3 +1,3 @@
 # RPS-LS
 
-![](https://i.imgur.com/ceUjdDL.gifv)
+![](https://i.imgur.com/ceUjdDL.gif)
