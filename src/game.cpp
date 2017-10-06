@@ -186,7 +186,30 @@ void Game::start()
 						Sleep(20);
 						break;
 					}
-
+				case 0x31:
+					currentMenuSelection = 1;
+					redraw();
+					break;
+				case 0x32:
+					currentMenuSelection = 2;
+					redraw();
+					break;
+				case 0x33:
+					currentMenuSelection = 3;
+					redraw();
+					break;
+				case 0x34:
+					currentMenuSelection = 4;
+					redraw();
+					break;
+				case 0x35:
+					currentMenuSelection = 5;
+					redraw();
+					break;
+				case 0x36:
+					currentMenuSelection = 6;
+					redraw();
+					break;
 				case VK_RETURN:
 					computerTurn();
 					//live = false;
