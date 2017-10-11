@@ -2,6 +2,8 @@
 
 Game::Game()
 {
+	// create our options
+	// use a pointer so it doesn't get deleted until we explicity delete it
 	Option *rock = new Option(ROCK, "Rock", { SCISSORS, LIZARD }, { "Rock breaks scissors", "Rock covers lizard" });
 	Option *scissors = new Option(SCISSORS, "Scissors", { PAPER, LIZARD }, { "Scissors cut paper", "Scissors decapitates lizard" });
 	Option *paper = new Option(PAPER, "Paper", { ROCK, SPOCK }, { "Paper covers rock", "Paper disproves Spock" });
@@ -9,6 +11,7 @@ Game::Game()
 	Option *lizard = new Option(LIZARD, "Lizard", { SPOCK, PAPER }, { "Lizard poisons Spock", "Lizard eats paper" });
 	Option *quit = new Option(QUIT, "Quit", { QUIT }, { "" });
 
+	// store our options in a map
 	options[ROCK] = rock;
 	options[SCISSORS] = scissors;
 	options[PAPER] = paper;
@@ -16,6 +19,7 @@ Game::Game()
 	options[LIZARD] = lizard;
 	options[QUIT] = quit;
 
+	// set our defaults
 	currentMenuSelection = 1;
 	live = true;
 	userTurn = true;
@@ -63,29 +67,14 @@ void Game::displayResults()
 	std::cout << "\n\nUser Choice: " << options.at(userChoice)->name << std::endl;
 	std::cout << "Computer Choice: " << options.at(computerChoice)->name << std::endl;
 	std::cout << winMessage << std::endl;
-
-	/*
-	int results = winCheck();
-
-	switch (results)
-	{
-	case WIN:
-		std::cout << "You Win!" << std::endl;
-		break;
-	case LOSE:
-		std::cout << "You Lose!" << std::endl;
-		break;
-	case TIE:
-		std::cout << "The game was a tie" << std::endl;
-		break;
-	}
-	*/
 }
 
-// advanced abstract menu
+// display menu
 void Game::displayMenu()
 {
+	// get console output object
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	// set the console color
 	SetConsoleTextAttribute(hConsole, 7);
 
 	// menu
@@ -93,19 +82,26 @@ void Game::displayMenu()
 	std::cout << "Please select an option: \n";
 	std::cout << "------\n";
 
+	// loop through our options map
 	for (auto it = options.begin(); it != options.end(); it++)
 	{
-		int index = std::distance(options.begin(), it) + 1;
-		// highlight current selection
-		if (index == currentMenuSelection)
+		// if the map[int] is equal to currentMenuSelection
+		if (it->first == currentMenuSelection)
+		{
+			// set selected color
 			SetConsoleTextAttribute(hConsole, 16);
+		}
 		else
+		{
+			// set default color
 			SetConsoleTextAttribute(hConsole, 7);
-
-		// display
+		}
+		// display info about item
 		std::cout << it->second->id << ". " << it->second->name << std::endl;
 	}
+	// set default color
 	SetConsoleTextAttribute(hConsole, 7);
+	// display score
 	std::cout << "\n\n\n";
 	std::cout << "SCORE\n";
 	std::cout << "-------------\n";
@@ -113,14 +109,20 @@ void Game::displayMenu()
 	std::cout << "COMPUTER: " << computerScore << "\n";
 	std::cout << "TIE: " << tieCount << "\n";
 
+	// if score is greater than zero
 	if (userScore > 0 || computerScore > 0 || tieCount > 0)
+	{
+		// display results
 		displayResults();
+	}
 }
 
 // redraw the menu
 void Game::redraw()
 {
+	// clear screen
 	system("CLS");
+	// display our menu
 	displayMenu();
 }
 
@@ -150,15 +152,16 @@ void Game::start()
 	GetConsoleMode(hstdin, &mode);
 	SetConsoleMode(hstdin, 0);
 
+	// loop for days
 	while (live)
 	{
 		DWORD count;
-		// wait for hstdin
+		// wait for input
 		if (WaitForSingleObject(hstdin, 0) == WAIT_OBJECT_0)
 		{
 			// get console input
 			ReadConsoleInput(hstdin, &event, 1, &count);
-
+			// on keydown
 			if ((event.EventType == KEY_EVENT) && event.Event.KeyEvent.bKeyDown)
 			{
 				switch (event.Event.KeyEvent.wVirtualKeyCode)
@@ -166,7 +169,7 @@ void Game::start()
 				case VK_ESCAPE:	// escape key
 					exit(0);	// terminate the program
 					break;
-				case VK_UP:
+				case VK_UP:	// up
 					if (currentMenuSelection <= ROCK)
 						break;
 					else
@@ -176,7 +179,7 @@ void Game::start()
 						Sleep(20);
 						break;
 					}
-				case VK_DOWN:
+				case VK_DOWN:	// down
 					if (currentMenuSelection >= QUIT)
 						break;
 					else
@@ -186,31 +189,31 @@ void Game::start()
 						Sleep(20);
 						break;
 					}
-				case 0x31:
+				case 0x31:	// 1
 					currentMenuSelection = 1;
 					redraw();
 					break;
-				case 0x32:
+				case 0x32:	// 2
 					currentMenuSelection = 2;
 					redraw();
 					break;
-				case 0x33:
+				case 0x33:	// 3
 					currentMenuSelection = 3;
 					redraw();
 					break;
-				case 0x34:
+				case 0x34:	// 4
 					currentMenuSelection = 4;
 					redraw();
 					break;
-				case 0x35:
+				case 0x35:	// 5
 					currentMenuSelection = 5;
 					redraw();
 					break;
-				case 0x36:
+				case 0x36:	// 6
 					currentMenuSelection = 6;
 					redraw();
 					break;
-				case VK_RETURN:
+				case VK_RETURN:		// enter
 					computerTurn();
 					//live = false;
 					userChoice = currentMenuSelection;
@@ -227,6 +230,22 @@ void Game::start()
 					break;
 				}
 			}
+		}
+	}
+}
+
+// deconstructor
+Game::~Game()
+{
+	// delete our stuff
+	for (int i = ROCK; i <= QUIT; i++)
+	{
+		try {
+			delete options[i];
+		}
+		catch(int err)
+		{
+			exit(1);
 		}
 	}
 }

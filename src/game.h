@@ -27,6 +27,7 @@ private:
 	std::map<int, Option*> options;
 public:
 	Game();
+	~Game();
 	void winCheck();
 	void displayResults();
 	void displayMenu();
