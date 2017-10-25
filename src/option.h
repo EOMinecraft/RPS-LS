@@ -1,9 +1,10 @@
+#pragma once
+
 #include <vector>
 #include <string>
 #include <map>
 
-enum MENU
-{
+enum MENU {
 	ROCK = 1,
 	PAPER,
 	SCISSORS,
@@ -12,11 +13,17 @@ enum MENU
 	QUIT
 };
 
-struct Option
-{
-public:
+struct Option {
+    // name of option
 	std::string name;
+    // int id
 	int id;
+    // map to store win condtions
+    // int stores the id's we win against
+    // string is the win message
+    // ---------------------------
+    // if this is a rock and we want to check against scissors
+    // rock[SCISSORS] = "Rock breaks scissors" (after we pass the correct information to the constructor)
 	std::map<int, std::string> win;
 
 	// constructor

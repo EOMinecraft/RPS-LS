@@ -1,10 +1,10 @@
 #include "game.h"
 
-Game::Game()
-{
+Game::Game() {
 	// create our options
 	// use a pointer so it doesn't get deleted until we explicity delete it
-	Option *rock = new Option(ROCK, "Rock", { SCISSORS, LIZARD }, { "Rock breaks scissors", "Rock covers lizard" });
+    // probably doesn't need to be a pointer
+	Option *rock = new Option(ROCK, "Rock", { SCISSORS, LIZARD }, { "Rock breaks scissors", "Rock crushes lizard" });
 	Option *scissors = new Option(SCISSORS, "Scissors", { PAPER, LIZARD }, { "Scissors cut paper", "Scissors decapitates lizard" });
 	Option *paper = new Option(PAPER, "Paper", { ROCK, SPOCK }, { "Paper covers rock", "Paper disproves Spock" });
 	Option *spock = new Option(SPOCK, "Spock", { ROCK, SCISSORS }, { "Spock vaporizes rock", "Spock crushes scissors" });
@@ -26,21 +26,17 @@ Game::Game()
 }
 
 // check for win conditions
-void Game::winCheck()
-{
+void Game::winCheck() {
 	// if game is a tie
-	if (userChoice == computerChoice)
-	{
+	if (userChoice == computerChoice) {
 		tieCount++;
 		winMessage = "The game was a tie";
 	}
 
 	// if computer choice is in the userChoice objects win condition
-	for (auto &p : options.at(userChoice)->win)
-	{
+	for (auto &p : options.at(userChoice)->win) {
 		// check first key of the win map
-		if (computerChoice == p.first)
-		{
+		if (computerChoice == p.first) {
 			// store win message
 			winMessage = p.second;
 			userScore++;
@@ -48,11 +44,9 @@ void Game::winCheck()
 	}
 
 	// loop through the computerChoice win condition map
-	for (auto &p : options.at(computerChoice)->win)
-	{
+	for (auto &p : options.at(computerChoice)->win) {
 		// if user choice is contained as a key
-		if (userChoice == p.first)
-		{
+		if (userChoice == p.first) {
 			// store the value of p to winMessage
 			winMessage = p.second;
 			computerScore++;
@@ -62,16 +56,14 @@ void Game::winCheck()
 }
 
 // display final results
-void Game::displayResults()
-{
+void Game::displayResults() {
 	std::cout << "\n\nUser Choice: " << options.at(userChoice)->name << std::endl;
 	std::cout << "Computer Choice: " << options.at(computerChoice)->name << std::endl;
 	std::cout << winMessage << std::endl;
 }
 
 // display menu
-void Game::displayMenu()
-{
+void Game::displayMenu() {
 	// get console output object
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	// set the console color
@@ -83,16 +75,13 @@ void Game::displayMenu()
 	std::cout << "------\n";
 
 	// loop through our options map
-	for (auto it = options.begin(); it != options.end(); it++)
-	{
+	for (auto it = options.begin(); it != options.end(); it++) {
 		// if the map[int] is equal to currentMenuSelection
-		if (it->first == currentMenuSelection)
-		{
+		if (it->first == currentMenuSelection) {
 			// set selected color
 			SetConsoleTextAttribute(hConsole, 16);
 		}
-		else
-		{
+		else {
 			// set default color
 			SetConsoleTextAttribute(hConsole, 7);
 		}
@@ -110,16 +99,14 @@ void Game::displayMenu()
 	std::cout << "TIE: " << tieCount << "\n";
 
 	// if score is greater than zero
-	if (userScore > 0 || computerScore > 0 || tieCount > 0)
-	{
+	if (userScore > 0 || computerScore > 0 || tieCount > 0) {
 		// display results
 		displayResults();
 	}
 }
 
 // redraw the menu
-void Game::redraw()
-{
+void Game::redraw() {
 	// clear screen
 	system("CLS");
 	// display our menu
@@ -127,19 +114,20 @@ void Game::redraw()
 }
 
 // get a random number for computerChoice
-void Game::computerTurn()
-{
+void Game::computerTurn() {
 	computerChoice = std::rand() % (LIZARD);
 	computerChoice += 1;
 }
 
 // start the game
-void Game::start()
-{
+void Game::start() {
 	// seed
+    // (CLion hilights std:: and states "qualifier is redundant")
+    // (Clion hilights NULL and states "(macro) NULL 0 \n Zero constant can be replaced with NULLPTR)
 	std::srand(time(NULL));
 
 	// throw away the first random number
+    // (CLion hilights std:: and states "qualifier is redundant")
 	std::rand();
 
 	// display the menu
@@ -153,42 +141,32 @@ void Game::start()
 	SetConsoleMode(hstdin, 0);
 
 	// loop for days
-	while (live)
-	{
+	while (live) {
 		DWORD count;
 		// wait for input
-		if (WaitForSingleObject(hstdin, 0) == WAIT_OBJECT_0)
-		{
+		if (WaitForSingleObject(hstdin, 0) == WAIT_OBJECT_0) {
 			// get console input
 			ReadConsoleInput(hstdin, &event, 1, &count);
 			// on keydown
-			if ((event.EventType == KEY_EVENT) && event.Event.KeyEvent.bKeyDown)
-			{
-				switch (event.Event.KeyEvent.wVirtualKeyCode)
-				{
+			if ((event.EventType == KEY_EVENT) && event.Event.KeyEvent.bKeyDown) {
+				switch (event.Event.KeyEvent.wVirtualKeyCode) {
+
 				case VK_ESCAPE:	// escape key
 					exit(0);	// terminate the program
-					break;
 				case VK_UP:	// up
-					if (currentMenuSelection <= ROCK)
-						break;
-					else
-					{
-						currentMenuSelection--;
-						redraw();
-						Sleep(20);
-						break;
-					}
+				    if (currentMenuSelection <= ROCK)
+				        break;
+				    currentMenuSelection--;
+				    redraw();
+				    Sleep(20);
+				    break;
 				case VK_DOWN:	// down
-					if (currentMenuSelection >= QUIT)
-						break;
-					else
-					{
-						currentMenuSelection++;
-						redraw();
-						Sleep(20);
-						break;
-					}
+				    if (currentMenuSelection >= QUIT)
+				        break;
+				    currentMenuSelection++;
+				    redraw();
+				    Sleep(20);
+				    break;
 				case 0x31:	// 1
 					currentMenuSelection = 1;
 					redraw();
@@ -217,16 +195,14 @@ void Game::start()
 					computerTurn();
 					//live = false;
 					userChoice = currentMenuSelection;
-					if (userChoice == QUIT)
-					{
-						live = false;
-						//exit(0);
+					if (userChoice == QUIT) {
+					    live = false;
+					    //exit(0);
 					}
-					else
-					{
-						winCheck();
-						redraw();
-					}
+					else {
+				        winCheck();
+				        redraw();
+				    }
 					break;
 				}
 			}
@@ -235,17 +211,14 @@ void Game::start()
 }
 
 // deconstructor
-Game::~Game()
-{
-	// delete our stuff
-	for (int i = ROCK; i <= QUIT; i++)
-	{
-		try {
-			delete options[i];
-		}
-		catch(int err)
-		{
-			exit(1);
-		}
-	}
+Game::~Game() {
+    // delete our stuff so memory doesn't leak
+    for (int i = ROCK; i <= QUIT; i++) {
+        try {
+            delete options[i];
+        }
+        catch (int err) {
+            exit(1);
+        }
+    }
 }
